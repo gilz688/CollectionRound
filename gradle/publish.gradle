@@ -1,0 +1,106 @@
+// Configures publishing of Maven artifacts to Bintray
+
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+def ARTIFACT_ID = "collection-round"
+def BINTRAY_REPOSITORY = "CollectionRound"
+def BINTRAY_ORGINIZATION= "gilz688"
+
+def ISSUE_URL= "https://github.com/gilz688/CollectionRound/issues"
+def SITE_URL= "https://github.com/gilz688/CollectionRound"
+def VCS_URL= "https://github.com/gilz688/CollectionRound.git"
+def LIBRARY_VERSION_NAME= version
+
+afterEvaluate {
+    project.publishing.publications.all {
+        // rename artifacts
+        groupId = group
+        if (it.name.contains('metadata')) {
+            artifactId = "$ARTIFACT_ID"
+        } else {
+            artifactId = "$ARTIFACT_ID-$name"
+        }
+    }
+}
+
+def getBintrayUserProperty() {
+    return hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+}
+
+def getBintrayApiKeyProperty() {
+    return hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+}
+
+def pomConfig = {
+    licenses {
+        license {
+            name "MIT"
+            url "https://opensource.org/licenses/mit-license"
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id "gilz688"
+            name "Gilmore Capiral"
+            email "eromlig.ac@gmail.com"
+        }
+    }
+
+    scm {
+        url "https://github.com/gilz688/CollectionRound"
+    }
+}
+
+bintray {
+    user = getBintrayUserProperty()
+    key = getBintrayApiKeyProperty()
+    publish = true
+
+    pkg {
+        repo = BINTRAY_REPOSITORY
+        name = ARTIFACT_ID
+        userOrg = BINTRAY_ORGINIZATION
+        licenses = ['MIT']
+        vcsUrl = VCS_URL
+        websiteUrl = SITE_URL
+        issueTrackerUrl = ISSUE_URL
+
+        githubRepo = 'gilz688/CollectionRound'
+        githubReleaseNotesFile = 'README.md'
+
+        version {
+            name = LIBRARY_VERSION_NAME
+            vcsTag = LIBRARY_VERSION_NAME
+            released = new Date()
+        }
+    }
+}
+
+project.ext.configureMavenCentralMetadata = {
+    def root = it.asNode()
+    // NOTE: Don't try to move top-level things (especially "description") to the pomConfig block
+    //       because they would resolve incorrectly to top-level project properties in Gradle/Groovy
+    root.appendNode('name', project.name)
+    root.appendNode('description', 'Sum-safe rounding for collections')
+    root.appendNode('url', SITE_URL)
+    root.children().last() + pomConfig
+}
+
+publishing {
+    publications.all {
+        pom.withXml(configureMavenCentralMetadata)
+    }
+}
+
+bintrayUpload.doFirst {
+    publications = publishing.publications.collect {
+        it.name
+    }.findAll {
+        it != "kotlinMultiplatform"
+    }
+}
+
+bintrayUpload.dependsOn publishToMavenLocal
