@@ -1,5 +1,5 @@
 # CollectionRound: Sum-safe Rounding for  Collections and Iterables
-[ ![Download](https://api.bintray.com/packages/gilz688/CollectionRound/collection-round/images/download.svg) ](https://bintray.com/gilz688/CollectionRound/collection-round/_latestVersion)[![Build Status](https://travis-ci.org/gilz688/CollectionRound.svg?branch=master)](https://travis-ci.org/gilz688/CollectionRound)
+[ ![Download](https://api.bintray.com/packages/gilz688/CollectionRound/collection-round/images/download.svg) ](https://bintray.com/gilz688/CollectionRound/collection-round/_latestVersion)[![Build Status](https://travis-ci.org/gilz688/CollectionRound.svg?branch=master)](https://travis-ci.org/gilz688/CollectionRound) [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 CollectionRound is an Kotlin Multiplatform library for sum-safe rounding of floating point numbers for Kotlin/JVM, Kotlin/JS and Kotlin/Native (MinGW).
 
